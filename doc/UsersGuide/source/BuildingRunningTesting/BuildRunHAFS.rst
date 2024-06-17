@@ -117,7 +117,7 @@ To configure an experiment, run:
 
 .. code-block:: console
 
-    cd /path/to/HAFS/parm
+    cd $PROJECT/save/<username>/HAFS/parm
     cp system.conf.<system> system.conf
     vi system.conf
 
@@ -285,7 +285,9 @@ Instead of running ``rocotorun`` manually, users can instead automate this task 
 .. code-block:: console
 
     crontab -e
-    */5 * * * * ./$PROJECT/save/<username>/HAFS/rocoto/cronjob_hafs.sh
+    */5 * * * * cd /path/to/HAFS/rocoto && ./cronjob_hafs.sh
+
+For example, a user named Jane Doe might paste ``*/5 * * * * cd /scratch2/NAGAPE/epic/save/Jane.Doe/HAFS/rocoto && ./cronjob_hafs.sh`` into her crontab. 
 
 .. note::
 
