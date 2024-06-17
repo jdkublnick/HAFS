@@ -4,7 +4,7 @@
 Building and Running HAFS
 *******************************
 
-This chapter walks users through a basic experiment using HAFS. Data comes from Tropical Storm Isaias (2020-08-25 12z) and is already available on disk on supported systems. 
+This chapter walks users through a basic experiment using HAFS. Data comes from Hurricane Laura (2020-08-25 12z) and is already available on disk on supported systems. 
 
 Currently, the HAFS application works on these NOAA HPC platforms: 
 
