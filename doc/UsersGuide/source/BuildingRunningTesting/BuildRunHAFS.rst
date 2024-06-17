@@ -18,9 +18,9 @@ Clone and Checkout the Repository
 
 .. code-block:: console
 
-    git clone <-b BRANCH> --recursive https://github.com/hafs-community/HAFS.git
+    git clone -b <BRANCH> --recursive https://github.com/hafs-community/HAFS.git
 
-Select the branch to clone by setting the ``<-b BRANCH>`` option to the branch name.
+Select the branch to clone by setting the ``<BRANCH>`` option to the branch name. In general, the ``production/hafs.v#`` branch with the highest version number will be up-to-date with code for the most recent or upcoming release. The ``develop`` branch contains code that is _________. 
 
 .. note::
    ``develop`` is the default branch.
@@ -34,12 +34,39 @@ Build and Install HAFS
     cd /path/to/HAFS/sorc
     ./install_hafs.sh > install_hafs.log 2>&1
 
+.. note::
+
+    Building HAFS can take a while, potentially upwards of an hour. To see output printed to the console as HAFS builds, users can omit ``> install_hafs.log 2>&1`` when running ``install_hafs.sh``. 
+
+Once ``install_hafs.sh`` has run, ``install_hafs.log`` should appear in the ``sorc`` directory. Users can also check the log files in the ``HAFS/sorc/logs`` directory to see if the build was successful or if there were any errors. A successful build should result in a ``build_*.log`` file for each executable: 
+
+    * build_forecast.log
+    * build_gsi.log
+    * build_hycom_utils.log
+    * build_post.log
+    * build_tools.log
+    * build_tracker.log
+    * build_utils.log
+    * build_ww3_utils.log
+
+Additionally, several executables should appear in a new ``HAFS/exec`` directory. These executables include:
+
+    * hafs_forecast_*.x
+    * hafs_gsi_enkf.x
+    * hafs_gsi.x
+    * hafs_hycom_utils_*.x
+    * hafs_post.x
+    * hafs_tools_*.x
+    * hafs_tracker_*.x
+    * hafs_utils_*.x
+    * hafs_ww3_*.x
+
 .. Hint::
    Got errors? Look into the ``HAFS/sorc/logs`` directory.
 
-------------------------
-Parts of install_hafs.sh
-------------------------
+-----------------------------
+Parts of ``install_hafs.sh``
+-----------------------------
 
 * ``machine-setup.sh`` Determine shell, identify machine, and load modules
 
