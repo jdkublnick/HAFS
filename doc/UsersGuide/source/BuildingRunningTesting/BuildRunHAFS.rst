@@ -4,6 +4,8 @@
 Building and Running HAFS
 *******************************
 
+This chapter walks users through a basic experiment using HAFS. Data comes from Tropical Storm Isaias (2020-08-25 12z) and is already available on disk on supported systems. 
+
 Currently, the HAFS application works on these NOAA HPC platforms: 
 
 * wcoss_dell_p3
@@ -179,8 +181,6 @@ For example, an edited ``system.conf`` file on Hera might resemble the following
     cartopyDataDir=/scratch1/NCEPDEV/hwrf/noscrub/local/share/cartopy
 
 
-
-
 .. _physics:
 
 ---------------------------
@@ -263,10 +263,6 @@ Make sure to uncomment ``#set -x`` and edit ``HOMEhafs`` as appropriate. For exa
     date
 
     HOMEhafs=${HOMEhafs:-/scratch2/NAGAPE/epic/save/<username>/HAFS}
-
-
-
-    /scratch2/NAGAPE/epic/save/Gillian.Petro/HAFS/
 
 -----------------------------
 Run HAFS and Check Progress
