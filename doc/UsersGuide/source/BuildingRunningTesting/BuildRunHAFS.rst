@@ -6,6 +6,8 @@ Building and Running HAFS
 
 This chapter walks users through a basic experiment using HAFS. Data comes from Hurricane Laura (2020-08-25 12z) and is already available on disk on supported systems. 
 
+.. COMMENT - Check storm! Seems to be 13L which is Marco...
+
 Currently, the HAFS application works on these NOAA HPC platforms: 
 
 * wcoss_dell_p3
@@ -68,7 +70,7 @@ The ``install_hafs.sh`` script builds HAFS by calling several other scripts with
     * ``install_all.sh`` Copy executables to ``exec`` directory
     * ``link_fix.sh`` Link fix files (fix files are available on disk on supported platforms)
 
-To run ``install_hafs.sh``, navigate to ``sorc``:
+To build HAFS, navigate to ``sorc`` and run the installation script:
 
 .. code-block:: console
 
@@ -133,7 +135,7 @@ Edit the following:
     * ``CDNOSCRUB``: Track files will be copied to this location --- contents will not be scrubbed (user must have write permission)
     * ``CDSCRUB`` If scrub is set to yes, this directory will be removed (user must have write permission)
 
-For example, an edited ``system.conf`` file on Hera might resemble the following:
+For example, an edited ``system.conf`` file on Hera might resemble the following for an imaginary user Jane Doe:
 
 .. code-block:: console
 
@@ -146,15 +148,15 @@ For example, an edited ``system.conf`` file on Hera might resemble the following
     ## CPU account name for submitting jobs to the batch system.
     cpu_account=epic
     ## Archive path
-    archive=disk:/scratch2/NAGAPE/epic/Gillian.Petro
+    archive=disk:/scratch2/NAGAPE/epic/Jane.Doe
 
     [dir]
     ## Save directory.  Make sure you edit this.
-    CDSAVE=/scratch2/NAGAPE/epic/save/Gillian.Petro
+    CDSAVE=/scratch2/NAGAPE/epic/save/Jane.Doe
     ## Non-scrubbed directory for track files, etc.  Make sure you edit this.
-    CDNOSCRUB=/scratch2/NAGAPE/epic/noscrub/Gillian.Petro/hafstrak
+    CDNOSCRUB=/scratch2/NAGAPE/epic/noscrub/Jane.Doe/hafstrak
     ## Scrubbed directory for large work files.  Make sure you edit this.
-    CDSCRUB=/scratch2/NAGAPE/epic/scrub/Gillian.Petro
+    CDSCRUB=/scratch2/NAGAPE/epic/scrub/Jane.Doe
     ## Syndat directory for finding which cycles to run
     syndat=/scratch1/NCEPDEV/hwrf/noscrub/input/SYNDAT-PLUS
     COMOLD={oldcom}
@@ -187,11 +189,11 @@ For example, an edited ``system.conf`` file on Hera might resemble the following
 HAFS Physics Configuration
 ---------------------------
 
-Look in ``HAFS/parm/hafs.conf`` to determine what physics suites are running.
+Look in ``HAFS/parm/hafs.conf`` to determine what physics suites are running. For HAFS v2, the physics suites are:
 
-.. figure:: https://github.com/hafs-community/HAFS/wiki/docs_images/hafs_ccpp_suites.png
-    :width: 50%
-    :alt: CCPP suites listed in hafs.conf (updated 06/29/2023)
+    * ccpp_suite_regional=FV3_HAFS_v1_thompson_nonsst
+    * ccpp_suite_glob=FV3_HAFS_v1_thompson_nonsst
+    * ccpp_suite_nest=FV3_HAFS_v1_thompson_nonsst
 
 To determine what physics schemes are included in the suites mentioned above, run:
 
@@ -199,11 +201,6 @@ To determine what physics schemes are included in the suites mentioned above, ru
 
     more HAFS/sorc/hafs_forecast.fd/FV3/ccpp/suites/suite_FV3_HAFS_v1_gfdlmp_tedmf_nonsst.xml
 
-
-.. COMMENT: Current physics
-    ccpp_suite_regional=FV3_HAFS_v1_thompson_nonsst
-    ccpp_suite_glob=FV3_HAFS_v1_thompson_nonsst
-    ccpp_suite_nest=FV3_HAFS_v1_thompson_nonsst
 
 .. _namelist-files:
 
@@ -232,6 +229,8 @@ Two types of nesting configurations are available: (i) regional* and (ii) globne
 XML File to Run the Workflow
 ----------------------------
 
+Navigate to the ``rocoto`` directory and alter the workflow XML file as needed. 
+
 .. code-block:: console
 
     cd /path/to/HAFS/rocoto
@@ -252,7 +251,7 @@ Change the cron job driver script to set up the experiment and storm.
 .. code-block:: console
 
     cd /path/to/HAFS/rocoto
-    vi cronjob_hafs.sh
+    vi cronjob_hafs_rt.sh
 
 Make sure to uncomment ``#set -x`` and edit ``HOMEhafs`` as appropriate. For example: 
 
@@ -264,41 +263,125 @@ Make sure to uncomment ``#set -x`` and edit ``HOMEhafs`` as appropriate. For exa
 
     HOMEhafs=${HOMEhafs:-/scratch2/NAGAPE/epic/save/<username>/HAFS}
 
+Additionally, comment out any tests you do not want to run by placing a ``#`` in front of the lines that start with ``./run_hafs.py``.
+
+-----------------------------
+Workflow Dependencies
+-----------------------------
+
+.. list-table:: 
+    :header-rows: 1
+
+    * - Order
+      - Task
+      - Description
+    * - 1
+      - Launch
+      - Launch the workflow
+    * - 2
+      - input ???
+      - 
+    * - 2
+      - atm_prep
+      - 
+    * - 2
+      - atm_prep_mvnest
+      - 
+    * - 3
+      - atm_ic
+      - Prepare atmospheric initial conditions files
+    * - 3
+      - atm_ic_fgat##
+      - Prepare atmospheric initial conditions FGAT files 
+    * - 3
+      - atm_lbc#
+      - Prepare atmospheric boundary conditions files
+    * - 4
+      - atm_init
+      - 
+    * - 4
+      - atm_init_fgat##
+      - 
+    * - 3/4 ?? 
+      - ocn_prep
+      - 
+    * - 4
+      - obs_prep
+      - 
+    * - 5
+      - atm_vi
+      - 
+    * - 5
+      - atm_vi_fgat##
+      - 
+    * - 5/6 ???
+      - analysis
+      - 
+    * - 6? (or 6.5?) --> after analysis!
+      - analysis_merge
+      - 
+    * - 7
+      - forecast
+      - 
+    * - 8
+      - unpost
+      - 
+    * - 8
+      - atm_post
+      - Post-processing of atmospheric model output
+    * - 8
+      - ocn_post
+      - Post-processing of ocean model output
+    * - 8
+      - wav_post
+      - Post-processing of wave model output
+    * - 9
+      - product
+      - Product generation?
+
+
 -----------------------------
 Run HAFS and Check Progress
 -----------------------------
 
-Run the driver script in the ``rocoto`` directory to launch the experiment: 
+Load the Rocoto module and run the driver script in the ``rocoto`` directory to launch the experiment: 
 
 .. code-block:: console
 
-    ./cronjob_hafs.sh
+    module load rocoto
+    ./cronjob_hafs_rt.sh
 
 To run through all tasks in the experiment, tasks need to be launched once their dependencies are satisfied. Users can launch tasks manually by running the ``rocotorun`` command regularly and repeatedly until all tasks are complete: 
 
 .. code-block:: console
 
-    rocotorun -d hafs-HAFS-13L-2020082512.db -w hafs-HAFS-13L-2020082512.xml
+    rocotorun -d hafs-<workflow_name>.db -w hafs-<workflow_name>.xml
+
+where ``<workflow_name>`` is replaced with the full name of the database (``.db``) and Rocoto XML files. For example:
+
+.. code-block:: console
+
+    rocotorun -d hafs-HAFS_rt_regional_atm-13L-2020082512.db -w hafs-HAFS_rt_regional_atm-13L-2020082512.xml
 
 Instead of running ``rocotorun`` manually, users can instead automate this task by adding it to a crontab on systems where :term:`cron` is available: 
 
 .. code-block:: console
 
     crontab -e
-    */5 * * * * cd /path/to/HAFS/rocoto && ./cronjob_hafs.sh
+    */5 * * * * cd /path/to/save/<username>/HAFS/rocoto && ./cronjob_hafs_rt.sh
 
-For example, a user named Jane Doe might paste ``*/5 * * * * cd /scratch2/NAGAPE/epic/save/Jane.Doe/HAFS/rocoto && ./cronjob_hafs.sh`` into her crontab. 
+For example, a user named Jane Doe might paste ``*/5 * * * * cd /scratch2/NAGAPE/epic/save/Jane.Doe/HAFS/rocoto && ./cronjob_hafs_rt.sh`` into her crontab. 
 
 .. note::
 
    On Orion, cron is only available on the orion-login-1 node.
 
 
-To check experiment progress, users can run the ``rocotostat`` command:
+To check experiment progress, users can run the ``rocotostat`` command with the same arguments as ``rocotorun`` described above:
 
 .. code-block:: console
 
-    rocotostat -d hafs-HAFS-13L-2020082512.db -w hafs-HAFS-13L-2020082512.xml
+    rocotostat -d hafs-<workflow_name>.db -w hafs-<workflow_name>.xml
 
 To check which specific tasks are in progress, users can run:
 
@@ -306,10 +389,59 @@ To check which specific tasks are in progress, users can run:
 
     squeue -u <username>
 
+If something goes wrong during the workflow, log files can be found in ``$CDSCRUB``. The location of this directory is set in ``parm/system.conf``. Specifically, log files will be located in ``$CDSCRUB/<reponame>/<cycle_date>/<storm_id>`` (e.g., ``$CDSCRUB/HAFS/2020082512/13L``). 
 
+.. note::
 
-.. COMMENT: 
-    ./hafs_rt_status.sh
-    hafs-HAFS_rt_regional_static_C192s1n4_atm_ocn_wav-00L-2020082512.xml
+    Storm IDs are a number-letter combination indicating the storm number for a particular year and the storm basin it appeared in. For example, ``13L`` is the 13th storm in the Atlantic basin for a particular year. 
 
+        * L = Atlantic basin
+        * E = Eastern North Pacific basin
+        * C = Central North Pacific basin
+        * W = Western North Pacific basin
+        * IO = North Indian Ocean
+        * SH = Southern Hemisphere
 
+.. COMMENT: Fix basin ID for IO and SH. Is it first letter?
+
+-------------------------------
+Experiment Directory Structure
+-------------------------------
+
+Several directories are generated over the course of a HAFS experiment. The directory structure diagram below summarizes how these directories are organized. 
+
+.. code-block:: console
+    
+    disk_project
+      └── save
+      |     └── Username
+      |           └── HAFS
+      |                 ├── parm
+      |                 |     └── *.conf (configuration files)
+      |                 ├── rocoto
+      |                 |     ├── cronjob_*.sh 
+      |                 |     ├── hafs_rt_status.sh
+      |                 |     ├── hafs-<repo>-##L-<cycledate>.db
+      |                 |     ├── hafs-<repo>-##L-<cycledate>.xml
+      |                 |     ├── hafs_workflow.xml.in
+      |                 |     ├── rocoto_util.sh
+      |                 |     └── run_hafs.py
+      |                 └── sorc
+      ├── scrub
+      |     └── Username
+      |           └── HAFS
+      |                 ├── 2020082512
+      |                 |     └── 13L
+      |                 |           └── *.log (log files for each task)
+      |                 ├── com
+      |                 |     └── 2020082512
+      |                 |           └── 13L
+      |                 |                 ├── 13l.2020082512.*
+      |                 |                 ├── storm1.conf
+      |                 |                 └── storm1.*
+      |                 └── log
+      |                       ├── jlogfile
+      |                       └── rocoto_<cycle>.log
+      └── noscrub
+            └── Username
+                  └── hafstrak
