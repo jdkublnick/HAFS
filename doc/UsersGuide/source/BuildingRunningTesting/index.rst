@@ -5,5 +5,5 @@ Building, Running, and Testing HAFS
    :maxdepth: 3
 
    QuickStart
-   ExtQuickStart
+   BuildRunHAFS
    RegressionTest
