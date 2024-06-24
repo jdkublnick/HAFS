@@ -117,7 +117,7 @@ HAFS v2.0.0 Operational Updates
 
 
 **Developed by:**
-    EMC and the UFS Hurricane Application Team. See currently active HAFS developers below.
+    EMC and the UFS Hurricane Application Team. See currently active HAFS developers below:
 
 .. list-table:: HAFS Developers
    :header-rows: 1
