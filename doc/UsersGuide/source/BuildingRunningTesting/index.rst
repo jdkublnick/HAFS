@@ -7,4 +7,3 @@ Building, Running, and Testing HAFS
    QuickStart
    BuildRunHAFS
    RegressionTest
-   Tutorials
